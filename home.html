@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://kit.fontawesome.com/58637c0295.js"
+      crossorigin="anonymous"
+    ></script>
+    <title>Weather App</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        font-size: 62.5%;
+      }
+      body {
+        background: rgb(255, 110, 127);
+        background: linear-gradient(
+          139deg,
+          rgba(255, 110, 127, 1) 42%,
+          rgba(191, 233, 255, 1) 85%
+        );
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        width: 100vw;
+      }
+      .box {
+        border-radius: 1rem;
+        box-shadow: 1px 2px 23px -6px rgba(0, 0, 0, 0.78);
+        width: 300px;
+        height: 500px;
+        background-color: rgb(74, 120, 160);
+        position: relative;
+        overflow: hidden;
+        transform: translate3d(0, 0, 0);
+        min-width: 20rem;
+        min-height: 35rem;
+      }
+      
+      .wave {
+        opacity: 0.3;
+        position: absolute;
+        background-color: aqua;
+        height: 60rem;
+        width: 50rem;
+        top: 90%;
+        left: 50%;
+        margin-top: -25rem;
+        margin-left: -25rem;
+        transform-origin: 50% 48%;
+        border-radius: 43%;
+        z-index: 1;
+        animation: drift 3000ms infinite linear;
+      }
+
+      .wave-three {
+        animation: drift 5000ms infinite linear;
+        z-index: 2;
+        opacity: 0.2;
+      }
+
+      .wave-two {
+        animation: drift 7000ms infinite linear;
+        z-index: 3;
+        opacity: 0.1;
+      }
+
+      .box:after {
+        content: '';
+        display: block;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 11;
+        transform: translate3d(0, 0, 0);
+      }
+
+      @keyframes drift {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .info {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 50%;
+        z-index: 4;
+      }
+      .location {
+        text-align: center;
+        font-weight: 800;
+        font-size: 3rem;
+        margin-top: 1.5rem;
+      }
+
+      .fa-street-view {
+        animation: rotates 3s linear infinite alternate;
+      }
+
+      @keyframes rotates {
+        from {
+          transform: translateX(-0.5rem);
+        }
+        to {
+          transform: translateX(0.5rem);
+        }
+      }
+
+      #date {
+        text-align: center;
+        font-weight: 300;
+        font-size: 1.2rem;
+        margin-top: 0.3rem;
+        color: rgb(93, 93, 97);
+      }
+
+      .temp {
+        text-align: center;
+        margin-top: 2.5rem;
+        font-size: 4rem;
+        font-weight: bold;
+      }
+
+      #tempmin-max {
+        text-align: center;
+        margin-top: 0.3rem;
+        font-size: 1.2rem;
+        color: rgb(93, 93, 97);
+        margin-top: 0.3rem;
+        font-weight: 300;
+      }
+
+      #weatherIcon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 35%;
+        font-size: 3rem;
+      }
+
+      #weatherIcon .fa-sun {
+        animation: fas-anime 4s linear infinite alternate;
+        font-size: 3rem;
+      }
+
+      @keyframes fas-anime {
+        from {
+          transform: scale(1.1);
+        }
+        to {
+          transform: scale(1.8);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div class="wave wave-one"></div>
+      <div class="wave wave-two"></div>
+      <div class="wave wave-three"></div>
+
+      <div id="weatherIcon">
+        <i class="fa-solid fa-sun" style="color: #eccc68"></i>
+      </div>
+
+      <div class="info">
+        <h2 class="location">
+          <i class="fa-solid fa-street-view"></i>{%location%},{%country%}
+        </h2>
+        <p id="date">FRI | JUN 23 | 20:42</p>
+        <h1 class="temp">{%tempval%}</h1>
+        <h3 id="tempmin-max">Min {%tempmin%}°C | Max {%tempmax%}°C</h3>
+      </div>
+    </div>
+    <script>
+      'use strict';
+
+      const currDate = document.getElementById('date');
+      let weather = document.getElementById('weatherIcon');
+      const searchCity = document.querySelector('.input__field');
+      const btn = document.querySelector('.btn');
+
+      const tempStatus = '{%tempStatus%}';
+
+      if (tempStatus == 'Sunny') {
+        weather.innerHTML =
+          '<i class="fa-solid fa-sun" style="color: #eccc68"></i>';
+      } else if (tempStatus == 'Clouds') {
+        weather.innerHTML =
+          '<i class="fa-solid fa-cloud" style="color: #ef1f2f6"></i>';
+      } else if (tempStatus == 'Rainy') {
+        weather.innerHTML =
+          '<i class="fa-solid fa-cloud-rain" style="color: #a4b0be"></i>';
+      } else {
+        weather.innerHTML =
+          '<i class="fa-solid fa-cloud" style="color: #44c3de"></i>';
+      }
+
+      //functions
+      const getCurrtDate = () => {
+        let currtdate = new Date();
+        const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        const months = [
+          'JAN',
+          'FEB',
+          'MAR',
+          'APR',
+          'MAY',
+          'JUN',
+          'JUL',
+          'AUG',
+          'SEP',
+          'OCT',
+          'NOV',
+          'DEC',
+        ];
+
+        const day = daysOfWeek[currtdate.getDay()];
+        const month = months[currtdate.getMonth()];
+        const date = currtdate.getDate();
+        const hour = currtdate.getHours().toString().padStart(2, 0);
+        const minute = currtdate.getMinutes().toString().padStart(2, 0);
+        currDate.textContent = `${day} | ${month} ${date} | ${hour}:${minute}`;
+      };
+
+      getCurrtDate();
+    </script>
+  </body>
+</html>
